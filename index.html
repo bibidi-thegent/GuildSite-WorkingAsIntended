@@ -52,6 +52,11 @@ a:hover{color:var(--legendary-soft)}
 .text-legendary{color:var(--legendary)!important}
 .text-muted-2{color:var(--muted)!important}
 
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:3.6rem;width:100%}
+.pw-toggle{position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);font-family:var(--font-data);font-size:.6rem;letter-spacing:.15em;padding:.2rem .25rem;cursor:pointer}
+.pw-toggle:hover{color:var(--legendary)}
+
 /* ---------- SPLASH ---------- */
 #splash{position:fixed;inset:0;z-index:3000;background:#000;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .7s ease}
 #splash.splash-out{opacity:0;pointer-events:none}
@@ -1483,6 +1488,30 @@ document.addEventListener("click", e=>{
   if(e.target.id === "navLoginBtn" || e.target.id === "lootLoginBtn" || e.target.id === "raidLoginBtn") openLoginModal();
   if(e.target.id === "navLogoutBtn") logoutAll();
 });
+function addPwToggles(ids){
+  ids.forEach(id=>{
+    const inp = document.getElementById(id);
+    if(!inp || inp.dataset.pwt) return;
+    inp.dataset.pwt = "1";
+    const wrap = document.createElement("div");
+    wrap.className = "pw-wrap";
+    ["mb-2","mb-3"].forEach(m=>{ if(inp.classList.contains(m)){ wrap.classList.add(m); inp.classList.remove(m); } });
+    inp.parentNode.insertBefore(wrap, inp);
+    wrap.appendChild(inp);
+    const btn = document.createElement("button");
+    btn.type = "button"; btn.className = "pw-toggle"; btn.textContent = "SHOW";
+    btn.setAttribute("aria-label", "Show password");
+    btn.addEventListener("click", ()=>{
+      const show = inp.type === "password";
+      inp.type = show ? "text" : "password";
+      btn.textContent = show ? "HIDE" : "SHOW";
+      btn.setAttribute("aria-label", show ? "Hide password" : "Show password");
+      inp.focus();
+    });
+    wrap.appendChild(btn);
+  });
+}
+addPwToggles(["mPass","loginPass","pwNew","pwNew2"]);
 
 function openForumHome(){ refreshAuthUI(); }
 function showPwGate(forced){
